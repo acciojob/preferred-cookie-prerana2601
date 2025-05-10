@@ -1,53 +1,35 @@
-//your JS code here. If required.
-// Helper function to get cookie value by name
 function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Helper function to set a cookie
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = `${name}=${value || ""}${expires}; path=/`;
+function applyPreferencesFromCookies() {
+  const savedSize = getCookie('fontsize');
+  const savedColor = getCookie('fontcolor');
+
+  if (savedSize) {
+    document.documentElement.style.setProperty('--fontsize', savedSize + 'px');
+    document.getElementById('fontsize').value = savedSize;
+  }
+
+  if (savedColor) {
+    document.documentElement.style.setProperty('--fontcolor', savedColor);
+    document.getElementById('fontcolor').value = savedColor;
+  }
 }
 
-// Apply preferences from cookies
-function applyPreferences() {
-    const fontsize = getCookie('fontsize');
-    const fontcolor = getCookie('fontcolor');
+document.getElementById('fontForm').addEventListener('submit', function (e) {
+  e.preventDefault();
 
-    if (fontsize) {
-        document.documentElement.style.setProperty('--fontsize', `${fontsize}px`);
-        document.getElementById('fontsize').value = fontsize;
-    }
+  const size = document.getElementById('fontsize').value;
+  const color = document.getElementById('fontcolor').value;
 
-    if (fontcolor) {
-        document.documentElement.style.setProperty('--fontcolor', fontcolor);
-        document.getElementById('fontcolor').value = fontcolor;
-    }
-}
+  document.cookie = `fontsize=${size}; path=/; max-age=31536000`;
+  document.cookie = `fontcolor=${color}; path=/; max-age=31536000`;
 
-// Save preferences to cookies
-function savePreferences(event) {
-    event.preventDefault();
-    const fontsize = document.getElementById('fontsize').value;
-    const fontcolor = document.getElementById('fontcolor').value;
-
-    setCookie('fontsize', fontsize, 7); // Save for 7 days
-    setCookie('fontcolor', fontcolor, 7); // Save for 7 days
-
-    // Apply preferences immediately
-    applyPreferences();
-}
-
-// Initialize preferences on page load
-document.addEventListener('DOMContentLoaded', () => {
-    applyPreferences();
-    document.getElementById('preferences-form').addEventListener('submit', savePreferences);
+  document.documentElement.style.setProperty('--fontsize', size + 'px');
+  document.documentElement.style.setProperty('--fontcolor', color);
 });
+
+window.addEventListener('DOMContentLoaded', applyPreferencesFromCookies);
