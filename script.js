@@ -25,11 +25,11 @@ document.getElementById('fontForm').addEventListener('submit', function (e) {
   const size = document.getElementById('fontsize').value;
   const color = document.getElementById('fontcolor').value;
 
+  // Set cookies
   document.cookie = `fontsize=${size}; path=/; max-age=31536000`;
   document.cookie = `fontcolor=${color}; path=/; max-age=31536000`;
 
+  // Apply changes immediately
   document.documentElement.style.setProperty('--fontsize', size + 'px');
   document.documentElement.style.setProperty('--fontcolor', color);
 });
-
-window.addEventListener('DOMContentLoaded', applyPreferencesFromCookies);
